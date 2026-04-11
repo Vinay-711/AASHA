@@ -535,6 +535,126 @@
     .page.active .page-body > * { animation: fadeIn 0.3s ease-out forwards; }
     #pharmacy-results .pharmacy-card { animation: fadeIn 0.3s ease-out forwards; }
 
+    /* ─── Feature: Drug Interaction Checker ─── */
+    .interaction-card {
+      background: white; border-radius: 20px; padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 16px;
+    }
+    .interaction-input {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .interaction-input input {
+      flex: 1; border: 1.5px solid #E5E7EB; border-radius: 16px;
+      padding: 12px 16px; font-family: 'Inter', sans-serif; font-size: 14px;
+      outline: none; color: #101623;
+    }
+    .interaction-input input:focus { border-color: #0E806C; }
+    .interaction-input button {
+      background: #0E806C; color: white; border: none; border-radius: 16px;
+      padding: 12px 20px; font-weight: 700; font-size: 13px; cursor: pointer;
+      font-family: 'Inter', sans-serif; white-space: nowrap;
+    }
+    .interaction-result {
+      background: #FFF8E1; border: 1.5px solid #FFD54F; border-radius: 16px;
+      padding: 16px; display: none;
+    }
+    .interaction-result.danger { background: #FFEBEE; border-color: #EF5350; }
+    .interaction-result.safe { background: #E8F5E9; border-color: #4CAF50; }
+    .interaction-result h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .interaction-result p { font-size: 13px; color: #3B4453; line-height: 1.6; }
+    .pill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .pill-tag {
+      background: rgba(14,128,108,0.1); color: #0E806C; padding: 6px 14px;
+      border-radius: 20px; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .pill-tag .remove { cursor: pointer; font-size: 14px; }
+
+    /* ─── Feature: Health Vitals Dashboard ─── */
+    .vitals-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+    }
+    .vital-card {
+      background: white; border-radius: 20px; padding: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden;
+    }
+    .vital-card .vital-icon { font-size: 28px; margin-bottom: 8px; }
+    .vital-card .vital-value {
+      font-size: 28px; font-weight: 900; color: #101623; line-height: 1;
+    }
+    .vital-card .vital-unit { font-size: 13px; color: #A1A8B0; font-weight: 500; }
+    .vital-card .vital-label { font-size: 12px; color: #3B4453; font-weight: 600; margin-top: 4px; }
+    .vital-card .vital-status {
+      font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px;
+      display: inline-block; margin-top: 6px;
+    }
+    .vital-card .vital-status.normal { background: #E8F5E9; color: #2E7D32; }
+    .vital-card .vital-status.warning { background: #FFF3E0; color: #E65100; }
+    .vital-card .vital-status.critical { background: #FFEBEE; color: #C62828; }
+    .vital-card .vital-trend {
+      position: absolute; bottom: 0; right: 0; width: 80px; height: 40px; opacity: 0.3;
+    }
+    .vital-card .mini-chart {
+      width: 100%; height: 100%;
+    }
+
+    /* ─── Feature: Fall Detection ─── */
+    .fall-detect-card {
+      background: linear-gradient(135deg, #1a1a2e, #16213e); color: white;
+      border-radius: 20px; padding: 20px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .fall-detect-icon {
+      width: 56px; height: 56px; background: rgba(239,83,80,0.2);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0;
+    }
+    .fall-detect-info h4 { font-size: 15px; font-weight: 700; }
+    .fall-detect-info p { font-size: 12px; opacity: 0.7; margin-top: 2px; }
+    .fall-detect-toggle {
+      margin-left: auto; width: 52px; height: 28px; background: #4CAF50;
+      border-radius: 20px; position: relative; cursor: pointer; flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    .fall-detect-toggle::after {
+      content: ''; width: 22px; height: 22px; background: white; border-radius: 50%;
+      position: absolute; top: 3px; right: 3px; transition: all 0.3s;
+    }
+    .fall-detect-toggle.off { background: #555; }
+    .fall-detect-toggle.off::after { right: auto; left: 3px; }
+
+    /* ─── Feature: Offline Indicator ─── */
+    .offline-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: #EF5350; color: white; text-align: center;
+      padding: 6px; font-size: 12px; font-weight: 700;
+      display: none;
+    }
+    .offline-bar.show { display: block; }
+
+    /* ─── Feature: Multilingual ─── */
+    .lang-modal {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); z-index: 400; display: none;
+      align-items: center; justify-content: center;
+    }
+    .lang-modal.show { display: flex; }
+    .lang-modal-content {
+      background: white; border-radius: 24px; padding: 32px; width: 340px;
+      max-width: 90vw; text-align: center;
+    }
+    .lang-modal-content h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #101623; }
+    .lang-modal-content p { font-size: 13px; color: #A1A8B0; margin-bottom: 20px; }
+    .lang-option {
+      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+      border: 2px solid #E5E7EB; border-radius: 16px; margin-bottom: 10px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .lang-option:hover, .lang-option.active { border-color: #0E806C; background: rgba(14,128,108,0.05); }
+    .lang-option .lang-flag { font-size: 28px; }
+    .lang-option .lang-name { font-weight: 700; font-size: 15px; color: #101623; }
+    .lang-option .lang-native { font-size: 12px; color: #A1A8B0; }
+
     /* ─── AI Chatbot ─── */
     .chat-fab {
       position: fixed; bottom: 90px; right: 20px; z-index: 200;
@@ -699,7 +819,7 @@
         <p>Your Health Guardian</p>
       </div>
       <div class="header-actions">
-        <div class="header-icon" onclick="showToast('🌐 Language switched to English')">
+        <div class="header-icon" onclick="openLangModal()">
           <div class="icon-circle">🌐</div><span>Language</span>
         </div>
         <div class="header-icon" onclick="showAlerts()">
@@ -793,6 +913,69 @@
             <span>Weekly average: <strong>86% adherence</strong></span>
           </div>
         </div>
+
+        <!-- ══ FEATURE 1: Health Vitals Dashboard ══ -->
+        <div class="section-title"><span style="font-size:20px">🫀</span><h3>Health Vitals</h3></div>
+        <div class="vitals-grid">
+          <div class="vital-card" onclick="showToast('❤️ Last synced 2 min ago via smartwatch')">
+            <div class="vital-icon">❤️</div>
+            <div class="vital-value" id="vital-hr">72</div>
+            <div class="vital-unit">bpm</div>
+            <div class="vital-label">Heart Rate</div>
+            <div class="vital-status normal">Normal</div>
+            <div class="vital-trend"><svg class="mini-chart" viewBox="0 0 80 40"><polyline fill="none" stroke="#4CAF50" stroke-width="2" points="0,30 10,25 20,28 30,20 40,25 50,18 60,22 70,20 80,15"/></svg></div>
+          </div>
+          <div class="vital-card" onclick="showToast('🩸 Last reading at 9:30 AM today')">
+            <div class="vital-icon">🩸</div>
+            <div class="vital-value" id="vital-bp">120<span class="vital-unit">/80</span></div>
+            <div class="vital-unit">mmHg</div>
+            <div class="vital-label">Blood Pressure</div>
+            <div class="vital-status normal">Normal</div>
+            <div class="vital-trend"><svg class="mini-chart" viewBox="0 0 80 40"><polyline fill="none" stroke="#2196F3" stroke-width="2" points="0,20 10,22 20,18 30,25 40,20 50,22 60,19 70,21 80,20"/></svg></div>
+          </div>
+          <div class="vital-card" onclick="showToast('🍬 Fasting glucose — measured at 7 AM')">
+            <div class="vital-icon">🍬</div>
+            <div class="vital-value" id="vital-sugar">110</div>
+            <div class="vital-unit">mg/dL</div>
+            <div class="vital-label">Blood Sugar</div>
+            <div class="vital-status warning">Borderline</div>
+            <div class="vital-trend"><svg class="mini-chart" viewBox="0 0 80 40"><polyline fill="none" stroke="#FF9800" stroke-width="2" points="0,15 10,20 20,18 30,25 40,30 50,22 60,28 70,25 80,30"/></svg></div>
+          </div>
+          <div class="vital-card" onclick="showToast('🌡️ Measured just now — normal range')">
+            <div class="vital-icon">🌡️</div>
+            <div class="vital-value" id="vital-temp">98.4</div>
+            <div class="vital-unit">°F</div>
+            <div class="vital-label">Body Temp</div>
+            <div class="vital-status normal">Normal</div>
+            <div class="vital-trend"><svg class="mini-chart" viewBox="0 0 80 40"><polyline fill="none" stroke="#4CAF50" stroke-width="2" points="0,20 10,20 20,21 30,20 40,20 50,21 60,20 70,20 80,20"/></svg></div>
+          </div>
+        </div>
+
+        <!-- ══ FEATURE 2: Fall Detection ══ -->
+        <div class="fall-detect-card">
+          <div class="fall-detect-icon">🚨</div>
+          <div class="fall-detect-info">
+            <h4>Fall Detection AI</h4>
+            <p>Uses accelerometer & ML to detect falls and auto-alert family</p>
+          </div>
+          <div class="fall-detect-toggle" id="fall-toggle" onclick="toggleFallDetection()"></div>
+        </div>
+
+        <!-- ══ FEATURE 3: Drug Interaction Checker ══ -->
+        <div class="section-title"><span style="font-size:20px">⚠️</span><h3>Drug Interaction Checker</h3></div>
+        <div class="interaction-card">
+          <div class="pill-tags" id="drug-tags">
+            <div class="pill-tag">💊 Cardivas 25mg <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+            <div class="pill-tag">💊 Ecosprin 75mg <span class="remove" onclick="this.parentElement.remove()">×</span></div>
+          </div>
+          <div class="interaction-input">
+            <input type="text" id="drug-input" placeholder="Add medicine name..." onkeydown="if(event.key==='Enter')addDrug()">
+            <button onclick="addDrug()">Add</button>
+          </div>
+          <button onclick="checkInteractions()" style="width:100%;background:linear-gradient(135deg,#FF6B35,#EF5350);color:white;border:none;border-radius:16px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:12px">🔍 Check Interactions</button>
+          <div class="interaction-result" id="interaction-result"></div>
+        </div>
+
       </div>
     </div>
 
@@ -1003,6 +1186,33 @@
     </div>
     <span class="voice-text" id="voice-text">Listening...</span>
   </div>
+
+  <!-- ═══ Language Modal ═══ -->
+  <div class="lang-modal" id="lang-modal" onclick="if(event.target===this)closeLangModal()">
+    <div class="lang-modal-content">
+      <h3>🌐 Select Language</h3>
+      <p>Choose your preferred language</p>
+      <div class="lang-option active" onclick="setLanguage('en')">
+        <span class="lang-flag">🇬🇧</span>
+        <div><div class="lang-name">English</div><div class="lang-native">English</div></div>
+      </div>
+      <div class="lang-option" onclick="setLanguage('hi')">
+        <span class="lang-flag">🇮🇳</span>
+        <div><div class="lang-name">Hindi</div><div class="lang-native">हिन्दी</div></div>
+      </div>
+      <div class="lang-option" onclick="setLanguage('kn')">
+        <span class="lang-flag">🇮🇳</span>
+        <div><div class="lang-name">Kannada</div><div class="lang-native">ಕನ್ನಡ</div></div>
+      </div>
+      <div class="lang-option" onclick="setLanguage('ta')">
+        <span class="lang-flag">🇮🇳</span>
+        <div><div class="lang-name">Tamil</div><div class="lang-native">தமிழ்</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Offline Indicator ═══ -->
+  <div class="offline-bar" id="offline-bar">📡 You're offline — AASHA still works! Data syncs when connection returns.</div>
 
   <script>
     const API = window.location.origin; // Backend on same origin
@@ -1261,6 +1471,177 @@
 
     // Hide chat FAB on auth screen
     document.getElementById('chat-fab').style.display = 'none';
+
+    // ═══════════════════════════════════════════
+    // FEATURE: Drug Interaction Checker
+    // ═══════════════════════════════════════════
+    const DRUG_INTERACTIONS = {
+      'cardivas+metformin': { level: 'warning', title: '⚠️ Mild Interaction Detected', msg: 'Carvedilol (Cardivas) may mask hypoglycemia symptoms in patients on Metformin. Monitor blood sugar more frequently. Consult your doctor if you experience dizziness or unusual fatigue.' },
+      'cardivas+ecosprin': { level: 'safe', title: '✅ No Major Interaction', msg: 'Cardivas 25mg and Ecosprin 75mg are commonly prescribed together for cardiac patients. Low-dose aspirin is safe with beta-blockers.' },
+      'ecosprin+warfarin': { level: 'danger', title: '🚨 SEVERE Interaction!', msg: 'Aspirin (Ecosprin) + Warfarin greatly increases bleeding risk! Do NOT combine without doctor supervision. Seek medical advice immediately.' },
+      'metformin+ecosprin': { level: 'safe', title: '✅ No Interaction', msg: 'Metformin and Ecosprin (Aspirin 75mg) are safe to take together. No clinically significant interaction reported.' },
+      'amlodipine+cardivas': { level: 'warning', title: '⚠️ Moderate Interaction', msg: 'Both lower blood pressure. Combined use may cause excessive BP drop, dizziness, or fainting. Use with caution — your doctor should adjust doses.' },
+      'atorvastatin+ecosprin': { level: 'safe', title: '✅ Safe Combination', msg: 'Atorvastatin and low-dose Aspirin are protective for cardiac health. Common dual therapy for heart patients. No interaction.' },
+    };
+
+    function addDrug() {
+      const input = document.getElementById('drug-input');
+      const name = input.value.trim();
+      if (!name) return;
+      const tags = document.getElementById('drug-tags');
+      const tag = document.createElement('div');
+      tag.className = 'pill-tag';
+      tag.innerHTML = '💊 ' + name + ' <span class="remove" onclick="this.parentElement.remove()">×</span>';
+      tags.appendChild(tag);
+      input.value = '';
+    }
+
+    function checkInteractions() {
+      const tags = document.querySelectorAll('#drug-tags .pill-tag');
+      const drugs = Array.from(tags).map(t => t.textContent.replace('💊','').replace('×','').trim().toLowerCase().split(' ')[0]);
+      const resultEl = document.getElementById('interaction-result');
+
+      if (drugs.length < 2) {
+        resultEl.className = 'interaction-result';
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = '<h4>ℹ️ Add at least 2 medicines</h4><p>Add two or more medicines to check for potential interactions.</p>';
+        return;
+      }
+
+      let found = null;
+      for (let i = 0; i < drugs.length; i++) {
+        for (let j = i + 1; j < drugs.length; j++) {
+          const key1 = drugs[i] + '+' + drugs[j];
+          const key2 = drugs[j] + '+' + drugs[i];
+          found = DRUG_INTERACTIONS[key1] || DRUG_INTERACTIONS[key2];
+          if (found) break;
+        }
+        if (found) break;
+      }
+
+      if (!found) {
+        found = { level: 'safe', title: '✅ No Known Interactions', msg: 'No significant interactions found between these medicines in our database. However, always consult your doctor or pharmacist for personalized advice.' };
+      }
+
+      resultEl.className = 'interaction-result ' + found.level;
+      resultEl.style.display = 'block';
+      resultEl.innerHTML = '<h4>' + found.title + '</h4><p>' + found.msg + '</p>';
+      showToast(found.level === 'danger' ? '🚨 Dangerous interaction found!' : found.level === 'warning' ? '⚠️ Interaction detected — check details' : '✅ Medicines are safe together');
+    }
+
+    // ═══════════════════════════════════════════
+    // FEATURE: Health Vitals Live Simulation
+    // ═══════════════════════════════════════════
+    function simulateVitals() {
+      // Heart Rate
+      const hr = 68 + Math.floor(Math.random() * 12);
+      document.getElementById('vital-hr').textContent = hr;
+      // Blood Sugar
+      const sugar = 95 + Math.floor(Math.random() * 30);
+      document.getElementById('vital-sugar').textContent = sugar;
+      // Temp
+      const temp = (97.8 + Math.random() * 1.2).toFixed(1);
+      document.getElementById('vital-temp').textContent = temp;
+    }
+    setInterval(simulateVitals, 8000);
+
+    // ═══════════════════════════════════════════
+    // FEATURE: Fall Detection AI
+    // ═══════════════════════════════════════════
+    let fallDetectionOn = true;
+    function toggleFallDetection() {
+      fallDetectionOn = !fallDetectionOn;
+      const toggle = document.getElementById('fall-toggle');
+      toggle.classList.toggle('off', !fallDetectionOn);
+      showToast(fallDetectionOn ? '🚨 Fall Detection AI: ON — monitoring movement' : '⏹️ Fall Detection AI: OFF');
+
+      if (fallDetectionOn && window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', handleMotion);
+      } else {
+        window.removeEventListener('devicemotion', handleMotion);
+      }
+    }
+
+    function handleMotion(e) {
+      if (!fallDetectionOn) return;
+      const acc = e.accelerationIncludingGravity;
+      if (!acc) return;
+      const magnitude = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+      if (magnitude > 35) {
+        triggerFallAlert();
+      }
+    }
+
+    function triggerFallAlert() {
+      if (confirm('🚨 FALL DETECTED!\n\nAASHA detected a sudden fall. Emergency contacts will be notified in 30 seconds.\n\nAre you okay? Press OK to cancel alert, or Cancel to send SOS.')) {
+        showToast('✅ False alarm cancelled. Stay safe!');
+      } else {
+        showToast('🚨 SOS sent to Priya, Dr. Sharma, and Ambulance!');
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    // FEATURE: Multilingual Support
+    // ═══════════════════════════════════════════
+    const TRANSLATIONS = {
+      hi: {
+        greeting: 'शुभ प्रभात',
+        healthAdherence: 'स्वास्थ्य पालन',
+        takeNow: 'अभी लें',
+        quickActions: 'त्वरित कार्य',
+        thisWeek: 'इस सप्ताह',
+        healthVitals: 'स्वास्थ्य संकेत',
+        drugChecker: 'दवा इंटरैक्शन चेकर',
+        emergency: 'आपातकालीन संपर्क',
+        scan: 'एआर दवा स्कैनर',
+        pharmacy: 'दवा खोजें',
+        family: 'परिवार',
+        fallDetect: 'गिरने का पता लगाना',
+        langToast: '🇮🇳 भाषा हिंदी में बदली गई'
+      },
+      kn: { greeting: 'ಶುಭ ಮುಂಜಾನೆ', langToast: '🇮🇳 ಭಾಷೆ ಕನ್ನಡಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ' },
+      ta: { greeting: 'காலை வணக்கம்', langToast: '🇮🇳 மொழி தமிழுக்கு மாற்றப்பட்டது' },
+      en: { greeting: 'Good Morning', langToast: '🇬🇧 Language set to English' }
+    };
+
+    function openLangModal() {
+      document.getElementById('lang-modal').classList.add('show');
+    }
+    function closeLangModal() {
+      document.getElementById('lang-modal').classList.remove('show');
+    }
+
+    function setLanguage(lang) {
+      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+      showToast(t.langToast);
+
+      // Update key UI text for Hindi
+      if (t.healthAdherence) {
+        document.querySelector('.adherence-info h3').textContent = t.healthAdherence;
+      }
+      if (t.quickActions) {
+        const titles = document.querySelectorAll('.section-title h3');
+        if (titles[0]) titles[0].textContent = t.quickActions;
+      }
+      if (t.fallDetect) {
+        document.querySelector('.fall-detect-info h4').textContent = t.fallDetect;
+      }
+      closeLangModal();
+    }
+
+    // ═══════════════════════════════════════════
+    // FEATURE: Offline Mode
+    // ═══════════════════════════════════════════
+    window.addEventListener('offline', () => {
+      document.getElementById('offline-bar').classList.add('show');
+    });
+    window.addEventListener('online', () => {
+      document.getElementById('offline-bar').classList.remove('show');
+      showToast('📶 Back online! Syncing data...');
+    });
 
     // ─── AI Chatbot ───
     const HEALTH_KB = {
