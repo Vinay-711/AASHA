@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AASHA — Your Health Guardian</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #F9F6F0;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ─── Auth Screen ─── */
+    .auth-screen {
+      min-height: 100vh;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 30px 30px;
+    }
+    .auth-screen.hidden { display: none; }
+    .auth-logo {
+      width: 72px; height: 72px;
+      background: rgba(14,128,108,0.1);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .auth-screen h2 {
+      font-size: 24px; font-weight: 800; color: #101623;
+      margin-bottom: 8px;
+    }
+    .auth-screen .subtitle {
+      font-size: 14px; color: #A1A8B0; margin-bottom: 32px;
+    }
+    .auth-field {
+      width: 100%;
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .auth-field .field-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      font-size: 18px; color: #A1A8B0;
+    }
+    .auth-field input {
+      width: 100%;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 24px;
+      padding: 16px 16px 16px 48px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: #101623;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .auth-field input:focus { border-color: #0E806C; }
+    .auth-field input::placeholder { color: #A1A8B0; }
+    .auth-check {
+      display: flex; align-items: center; gap: 8px;
+      margin: 8px 0 24px; font-size: 13px; color: #3B4453;
+    }
+    .auth-check input[type="checkbox"] {
+      accent-color: #0E806C; width: 18px; height: 18px;
+    }
+    .auth-check a { color: #0E806C; text-decoration: none; font-weight: 600; }
+    .auth-btn {
+      width: 100%;
+      background: #0E806C;
+      color: white;
+      border: none;
+      border-radius: 32px;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 24px;
+    }
+    .auth-btn:hover { background: #0B6656; }
+    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .auth-divider {
+      display: flex; align-items: center; gap: 16px;
+      width: 100%; margin-bottom: 24px;
+      color: #A1A8B0; font-size: 13px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: #E5E7EB;
+    }
+    .social-btn {
+      width: 100%;
+      background: white;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 32px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: #101623;
+      transition: all 0.2s;
+    }
+    .social-btn:hover { background: #f9f6f0; }
+    .auth-switch {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #3B4453;
+    }
+    .auth-switch a {
+      color: #0E806C;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .auth-error {
+      color: #EF5350;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .auth-success {
+      color: #2CC069;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    /* ─── Main App (hidden until logged in) ─── */
+    .main-app { display: none; }
+    .main-app.visible { display: block; }
+
+    /* ─── Status Bar ─── */
+    .status-bar {
+      background: #0E806C;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-bar .protected { display: flex; align-items: center; gap: 4px; }
+    .status-bar .battery { display: flex; align-items: center; gap: 4px; }
+
+    /* ─── App Header ─── */
+    .app-header {
+      background: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .app-logo {
+      width: 48px; height: 48px;
+      background: rgba(14,128,108,0.12);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .app-title { flex: 1; }
+    .app-title h1 { font-size: 22px; font-weight: 800; color: #0B6656; letter-spacing: 1.5px; }
+    .app-title p { font-size: 11px; color: #A1A8B0; font-weight: 500; }
+    .header-actions { display: flex; gap: 14px; }
+    .header-icon {
+      display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+    }
+    .header-icon .icon-circle {
+      width: 36px; height: 36px;
+      background: #F9F6F0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; position: relative;
+    }
+    .header-icon .badge {
+      position: absolute; top: -2px; right: -2px;
+      width: 14px; height: 14px; background: #EF5350; border-radius: 50%;
+      font-size: 8px; color: white;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+    .header-icon span { font-size: 9px; font-weight: 600; color: #101623; }
+
+    /* ─── Page Content ─── */
+    .page { display: none; padding-bottom: 100px; }
+    .page.active { display: block; }
+    .page-body { padding: 24px 20px; }
+
+    /* ─── Home Page ─── */
+    .greeting { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .greeting h2 { font-size: 22px; font-weight: 800; color: #101623; }
+    .greeting-sub { font-size: 14px; color: #3B4453; font-weight: 500; margin-bottom: 28px; }
+    .adherence-card {
+      background: white; border-radius: 20px; padding: 24px;
+      display: flex; align-items: center; gap: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 24px;
+    }
+    .progress-ring { width: 90px; height: 90px; position: relative; flex-shrink: 0; }
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring .value {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;
+    }
+    .progress-ring .value .num { font-size: 28px; font-weight: 800; color: #101623; }
+    .progress-ring .value .pct { font-size: 14px; font-weight: 700; color: #A1A8B0; }
+    .adherence-info h3 { font-size: 17px; font-weight: 700; color: #101623; margin-bottom: 4px; }
+    .adherence-info p { font-size: 13px; color: #3B4453; margin-bottom: 16px; }
+    .adherence-stats { display: flex; gap: 32px; }
+    .adherence-stats .stat .num { font-size: 18px; font-weight: 800; color: #101623; }
+    .adherence-stats .stat .label { font-size: 11px; color: #A1A8B0; font-weight: 500; }
+    .take-now-card {
+      background: #0E806C; border-radius: 20px; padding: 24px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 8px 24px rgba(14,128,108,0.3); margin-bottom: 32px;
+    }
+    .take-now-icon {
+      width: 54px; height: 54px; background: rgba(255,255,255,0.2);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; flex-shrink: 0;
+    }
+    .take-now-info { flex: 1; }
+    .take-now-info .label { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .take-now-info .med-name { font-size: 22px; font-weight: 800; color: white; }
+    .take-now-info .med-dose { font-size: 15px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .take-now-now { font-size: 34px; font-weight: 900; color: white; letter-spacing: 1.5px; }
+    .section-title { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .section-title h3 { font-size: 18px; font-weight: 800; color: #101623; }
+
+    /* ─── Family Page ─── */
+    .add-member-btn {
+      width: 100%; padding: 24px;
+      border: 2px dashed rgba(150,150,150,0.4); border-radius: 16px;
+      background: transparent; display: flex; align-items: center;
+      justify-content: center; gap: 12px; cursor: pointer; margin-bottom: 32px;
+    }
+    .add-member-btn:hover { border-color: #7C3AED; background: rgba(124,58,237,0.03); }
+    .add-member-btn .plus { font-size: 28px; color: #7C3AED; }
+    .add-member-btn span { font-size: 16px; font-weight: 600; color: #3B4453; }
+    .guardian-card, .member-card {
+      background: white; border-radius: 20px; padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 24px;
+    }
+    .guardian-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+    .guardian-avatar, .verifier-avatar {
+      width: 56px; height: 56px; background: #B5EAD7; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+    }
+    .verifier-avatar { width: 36px; height: 36px; font-size: 18px; }
+    .guardian-name { flex: 1; }
+    .guardian-name h3 { font-size: 22px; font-weight: 800; color: #101623; }
+    .guardian-name .rank { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+    .guardian-name .rank span { color: #F2994A; font-weight: 700; font-size: 14px; }
+    .points-badge {
+      background: rgba(14,128,108,0.1); border-radius: 16px; padding: 10px 20px; text-align: center;
+    }
+    .points-badge .num { font-size: 28px; font-weight: 900; color: #0E806C; }
+    .points-badge .label { font-size: 12px; color: #A1A8B0; font-weight: 500; }
+    .stats-grid { display: flex; gap: 8px; margin-bottom: 24px; }
+    .stat-box {
+      flex: 1; background: #FDF7F0; border-radius: 12px; padding: 14px 8px; text-align: center;
+    }
+    .stat-box .stat-row { display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .stat-box .num { font-size: 20px; font-weight: 800; color: #101623; }
+    .stat-box .label { font-size: 10px; color: #A1A8B0; font-weight: 500; margin-top: 4px; }
+    .next-badge { background: #FDF7F0; border-radius: 12px; padding: 16px; }
+    .next-badge p { font-size: 13px; color: #3B4453; margin-bottom: 12px; }
+    .next-badge p strong { color: #101623; font-weight: 600; }
+    .progress-bar { height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; }
+    .progress-bar .fill { height: 100%; background: #2CC069; border-radius: 4px; }
+    .member-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .member-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+    }
+    .member-info { flex: 1; }
+    .member-info h3 { font-size: 22px; font-weight: 800; color: #101623; }
+    .member-info p { font-size: 13px; color: #3B4453; font-weight: 500; }
+    .safe-badge {
+      background: rgba(44,192,105,0.15); border-radius: 20px; padding: 6px 14px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .safe-badge span { color: #0E806C; font-weight: 700; font-size: 14px; }
+    .info-boxes { display: flex; gap: 12px; margin-bottom: 20px; }
+    .info-box {
+      flex: 1; background: #FDF7F0; border-radius: 12px; padding: 16px;
+      min-height: 90px; display: flex; gap: 8px;
+    }
+    .info-box .content h4 { font-size: 14px; font-weight: 800; color: #101623; line-height: 1.3; }
+    .info-box .content p { font-size: 11px; color: #A1A8B0; font-weight: 500; margin-top: 6px; }
+    .action-buttons { display: flex; gap: 12px; }
+    .btn-primary, .btn-secondary {
+      flex: 1; border: none; border-radius: 12px; padding: 14px;
+      font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 8px; transition: all 0.2s;
+    }
+    .btn-primary { background: #0E806C; color: white; }
+    .btn-primary:hover { background: #0B6656; }
+    .btn-secondary { background: white; color: #101623; border: 1px solid rgba(0,0,0,0.1); }
+    .btn-secondary:hover { background: #f9f6f0; }
+
+    /* ─── Pharmacy Page ─── */
+    .search-bar {
+      background: white; border-radius: 28px; padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px;
+    }
+    .search-bar .search-icon { font-size: 22px; }
+    .search-bar input {
+      border: none; outline: none; font-family: 'Inter', sans-serif;
+      font-size: 16px; font-weight: 600; color: #101623; width: 100%; background: transparent;
+    }
+    .search-bar input::placeholder { color: #A1A8B0; font-weight: 400; }
+    .filter-chips { display: flex; gap: 12px; margin-bottom: 24px; }
+    .chip {
+      padding: 10px 18px; border-radius: 24px; display: flex; align-items: center;
+      gap: 6px; font-size: 14px; font-weight: 600; cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.1); background: white; color: #101623;
+    }
+    .chip.active {
+      background: #0E806C; color: white; border-color: #0E806C;
+      box-shadow: 0 4px 12px rgba(14,128,108,0.3);
+    }
+    .pharmacy-card {
+      background: white; border-radius: 20px; padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 20px;
+    }
+    .pharmacy-header { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+    .pharmacy-header .name { flex: 1; }
+    .pharmacy-header .name h3 { font-size: 20px; font-weight: 800; color: #101623; }
+    .pharmacy-header .name .distance { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+    .pharmacy-header .name .distance span { font-size: 13px; color: #A1A8B0; font-weight: 600; }
+    .stock-badge {
+      background: #E8F5E9; border-radius: 16px; padding: 6px 12px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .stock-badge span { font-size: 12px; font-weight: 800; color: #2E7D32; }
+    .oos-badge { background: #FFEBEE; }
+    .oos-badge span { color: #C62828; }
+    .notes-box {
+      background: #FDF7F0; border-radius: 12px; padding: 14px;
+      display: flex; align-items: flex-start; gap: 8px; margin: 16px 0;
+    }
+    .notes-box p { font-size: 14px; color: #3B4453; font-weight: 500; line-height: 1.4; }
+    .confidence-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .confidence-row .label { font-size: 13px; color: #A1A8B0; font-weight: 500; white-space: nowrap; }
+    .confidence-bar {
+      flex: 1; height: 6px; background: rgba(0,0,0,0.08); border-radius: 3px; overflow: hidden;
+    }
+    .confidence-bar .fill { height: 100%; background: #0E806C; border-radius: 3px; }
+    .confidence-row .pct { font-size: 15px; font-weight: 800; color: #0E806C; }
+    .verifier-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .verifier-info h4 { font-size: 14px; font-weight: 800; color: #101623; }
+    .verifier-info p { font-size: 11px; color: #A1A8B0; font-weight: 500; }
+
+    /* ─── Bottom Navigation ─── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px; background: white;
+      display: flex; align-items: flex-end; justify-content: space-around;
+      padding: 8px 0 12px; box-shadow: 0 -4px 16px rgba(0,0,0,0.05); z-index: 100;
+    }
+    .nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; padding: 4px 12px; transition: all 0.2s;
+    }
+    .nav-item .nav-icon { font-size: 24px; opacity: 0.5; }
+    .nav-item span { font-size: 11px; font-weight: 500; color: #A1A8B0; }
+    .nav-item.active .nav-icon { opacity: 1; }
+    .nav-item.active span { color: #0E806C; font-weight: 700; }
+    .nav-item.active { border-top: 3px solid #0E806C; margin-top: -3px; }
+    .sos-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; padding: 0 12px;
+    }
+    .sos-btn {
+      width: 52px; height: 52px; background: #EF5350; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 16px; font-weight: 900;
+      box-shadow: 0 4px 16px rgba(239,83,80,0.4); margin-top: -20px;
+    }
+    .sos-btn:hover { transform: scale(1.05); }
+    .sos-item span { font-size: 11px; font-weight: 500; color: #A1A8B0; }
+    .sos-item.active span { color: #EF5350; font-weight: 700; }
+
+    /* ─── Emergency Contacts ─── */
+    .contact-card {
+      background: white; border-radius: 20px; padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 16px;
+    }
+    .contact-avatar {
+      width: 56px; height: 56px; background: #F0F0F0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+    }
+    .contact-info { flex: 1; }
+    .contact-info h3 { font-size: 20px; font-weight: 800; color: #101623; }
+    .contact-info p { font-size: 13px; color: #A1A8B0; font-weight: 500; }
+    .call-btn {
+      width: 48px; height: 48px; background: #0E806C; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(14,128,108,0.3); transition: all 0.2s;
+    }
+    .call-btn:hover { transform: scale(1.05); background: #0B6656; }
+    .call-btn span { font-size: 22px; }
+
+    /* ─── AR Scanner ─── */
+    .ar-viewfinder {
+      background: #1a2332; border-radius: 20px; padding: 24px;
+      margin-bottom: 24px; position: relative; overflow: hidden;
+      border: 3px solid #0E806C;
+    }
+    .ar-viewfinder::before {
+      content: ''; position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px;
+      border: 2px solid rgba(14,128,108,0.4); border-radius: 12px;
+    }
+    .ar-corners { position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; pointer-events: none; }
+    .ar-corner { position: absolute; width: 20px; height: 20px; border: 3px solid #0E806C; }
+    .ar-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+    .ar-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .ar-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+    .ar-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; }
+    .ar-pills {
+      display: flex; gap: 8px; justify-content: center; padding: 32px 16px;
+      background: rgba(255,255,255,0.08); border-radius: 12px; margin: 16px 0;
+    }
+    .ar-pill {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .ar-scan-line {
+      position: absolute; left: 16px; right: 16px; height: 2px;
+      background: linear-gradient(90deg, transparent, #0E806C, transparent);
+      animation: scanLine 2.5s ease-in-out infinite;
+    }
+    @keyframes scanLine { 0%, 100% { top: 30%; opacity: 0.3; } 50% { top: 70%; opacity: 1; } }
+    .ar-legend { display: flex; gap: 16px; justify-content: center; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,0.7); }
+    .ar-legend span { display: flex; align-items: center; gap: 4px; }
+    .ar-legend .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .scan-btn-large {
+      width: 100%; background: #0E806C; color: white; border: none; border-radius: 20px;
+      padding: 20px; font-size: 20px; font-weight: 800; font-family: 'Inter', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 12px; transition: all 0.2s; box-shadow: 0 8px 24px rgba(14,128,108,0.3);
+      margin-bottom: 32px;
+    }
+    .scan-btn-large:hover { background: #0B6656; }
+    .scan-item {
+      display: flex; align-items: center; gap: 16px; padding: 16px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .scan-item:last-child { border-bottom: none; }
+    .scan-pill-icon {
+      width: 44px; height: 44px; background: rgba(14,128,108,0.08);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .scan-item-info { flex: 1; }
+    .scan-item-info h4 { font-size: 16px; font-weight: 700; color: #101623; }
+    .scan-item-info p { font-size: 12px; color: #A1A8B0; font-weight: 500; margin-top: 2px; }
+    .scan-status { font-size: 14px; font-weight: 600; color: #0E806C; }
+
+    /* ─── Medicine Schedule ─── */
+    .med-schedule-card {
+      background: white; border-radius: 16px; padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 12px;
+    }
+    .med-schedule-card .pill-icon { font-size: 22px; flex-shrink: 0; }
+    .med-schedule-card .med-text { flex: 1; }
+    .med-schedule-card .med-text p { font-size: 14px; color: #3B4453; font-weight: 500; }
+    .dose-count { font-size: 13px; color: #A1A8B0; font-weight: 500; margin: 8px 0 8px; }
+    .coming-badge {
+      background: white; border-radius: 16px; padding: 14px 20px;
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid rgba(0,0,0,0.08); margin-bottom: 32px;
+    }
+    .coming-badge span:first-child { font-size: 20px; }
+    .coming-badge p { font-size: 15px; font-weight: 600; color: #101623; }
+
+    /* ─── Weekly Chart ─── */
+    .weekly-chart-card {
+      background: white; border-radius: 20px; padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 16px;
+    }
+    .chart-bars {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      height: 140px; gap: 8px; margin-bottom: 8px;
+    }
+    .chart-col {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .chart-bar-wrap {
+      flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+      align-items: center;
+    }
+    .chart-bar {
+      width: 32px; border-radius: 8px; position: relative;
+      transition: height 0.5s ease;
+    }
+    .chart-bar .bar-label {
+      position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; font-weight: 700; color: white;
+      background: #0E806C; border-radius: 8px; padding: 2px 6px; white-space: nowrap;
+    }
+    .chart-bar.today-bar .bar-label { background: #F2994A; }
+    .chart-day {
+      font-size: 12px; font-weight: 600; color: #A1A8B0;
+    }
+    .chart-day.today { color: #F2994A; font-weight: 800; }
+    .weekly-avg {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 0 0; font-size: 14px; color: #3B4453;
+    }
+    .weekly-avg strong { font-weight: 800; color: #101623; }
+
+    /* Loading spinner */
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .page.active .page-body > * { animation: fadeIn 0.3s ease-out forwards; }
+    #pharmacy-results .pharmacy-card { animation: fadeIn 0.3s ease-out forwards; }
+
+    /* ─── AI Chatbot ─── */
+    .chat-fab {
+      position: fixed; bottom: 90px; right: 20px; z-index: 200;
+      width: 56px; height: 56px; background: linear-gradient(135deg, #0E806C, #2CC069);
+      border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(14,128,108,0.4);
+      transition: all 0.3s; font-size: 26px;
+    }
+    .chat-fab:hover { transform: scale(1.08); }
+    .chat-fab.open { background: #EF5350; box-shadow: 0 6px 24px rgba(239,83,80,0.4); }
+    .chat-panel {
+      position: fixed; bottom: 160px; right: 12px; z-index: 199;
+      width: 380px; max-width: calc(100vw - 24px); height: 480px;
+      background: white; border-radius: 24px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .chat-panel.open { display: flex; animation: fadeIn 0.25s ease-out; }
+    .chat-header {
+      background: linear-gradient(135deg, #0E806C, #2CC069);
+      padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+    }
+    .chat-header-avatar {
+      width: 40px; height: 40px; background: rgba(255,255,255,0.2);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .chat-header-info h4 { color: white; font-size: 16px; font-weight: 700; }
+    .chat-header-info p { color: rgba(255,255,255,0.7); font-size: 11px; }
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px; display: flex;
+      flex-direction: column; gap: 12px; background: #f9f6f0;
+    }
+    .chat-msg {
+      max-width: 85%; padding: 12px 16px; border-radius: 18px;
+      font-size: 14px; line-height: 1.5; word-wrap: break-word;
+    }
+    .chat-msg.bot {
+      background: white; color: #101623; align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .chat-msg.user {
+      background: #0E806C; color: white; align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-msg.typing { font-style: italic; color: #A1A8B0; }
+    .chat-input-bar {
+      padding: 12px 16px; display: flex; align-items: center; gap: 8px;
+      border-top: 1px solid rgba(0,0,0,0.06); background: white;
+    }
+    .chat-input-bar input {
+      flex: 1; border: 1.5px solid #E5E7EB; border-radius: 24px;
+      padding: 12px 16px; font-family: 'Inter', sans-serif;
+      font-size: 14px; outline: none; color: #101623;
+    }
+    .chat-input-bar input:focus { border-color: #0E806C; }
+    .chat-send-btn, .chat-voice-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; transition: all 0.2s;
+    }
+    .chat-send-btn { background: #0E806C; }
+    .chat-send-btn:hover { background: #0B6656; }
+    .chat-voice-btn { background: #f9f6f0; }
+    .chat-voice-btn:hover { background: #eee; }
+    .chat-voice-btn.listening { background: #EF5350; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .voice-indicator {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      z-index: 300; display: none;
+    }
+    .voice-indicator.active { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .voice-circle {
+      width: 120px; height: 120px; background: rgba(239,83,80,0.15);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      animation: pulse 1.5s infinite;
+    }
+    .voice-circle-inner {
+      width: 80px; height: 80px; background: #EF5350; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: white; box-shadow: 0 8px 32px rgba(239,83,80,0.4);
+    }
+    .voice-text { font-size: 16px; font-weight: 700; color: #101623; background: white; padding: 8px 20px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- AUTH: LOGIN SCREEN -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="auth-screen" id="auth-login">
+    <div class="auth-logo">🛡️</div>
+    <h2>Login</h2>
+    <p class="subtitle">Welcome back to AASHA</p>
+    <div id="login-error" class="auth-error"></div>
+    <div class="auth-field">
+      <span class="field-icon">📱</span>
+      <input type="text" id="login-phone" placeholder="Phone number">
+    </div>
+    <div class="auth-field">
+      <span class="field-icon">🔒</span>
+      <input type="password" id="login-password" placeholder="Password">
+    </div>
+    <button class="auth-btn" id="login-btn" onclick="doLogin()">Login</button>
+    <div class="auth-divider">OR</div>
+    <button class="social-btn" onclick="alert('Google sign-in coming soon')">G  Sign in with Google</button>
+    <button class="social-btn" onclick="alert('Apple sign-in coming soon')"> Sign in with Apple</button>
+    <p class="auth-switch">Don't have an account? <a onclick="showAuth('register')">Sign Up</a></p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- AUTH: REGISTER SCREEN -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="auth-screen hidden" id="auth-register">
+    <div class="auth-logo">🛡️</div>
+    <h2>Sign Up</h2>
+    <p class="subtitle">Create your AASHA account</p>
+    <div id="register-error" class="auth-error"></div>
+    <div id="register-success" class="auth-success"></div>
+    <div class="auth-field">
+      <span class="field-icon">👤</span>
+      <input type="text" id="reg-name" placeholder="Full Name">
+    </div>
+    <div class="auth-field">
+      <span class="field-icon">📱</span>
+      <input type="text" id="reg-phone" placeholder="Phone number">
+    </div>
+    <div class="auth-field">
+      <span class="field-icon">✉️</span>
+      <input type="email" id="reg-email" placeholder="Email (optional)">
+    </div>
+    <div class="auth-field">
+      <span class="field-icon">🔒</span>
+      <input type="password" id="reg-password" placeholder="Password">
+    </div>
+    <div class="auth-check">
+      <input type="checkbox" id="reg-agree" checked>
+      <label for="reg-agree">I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></label>
+    </div>
+    <button class="auth-btn" id="register-btn" onclick="doRegister()">Sign Up</button>
+    <div class="auth-divider">OR</div>
+    <button class="social-btn" onclick="alert('Google sign-up coming soon')">G  Sign up with Google</button>
+    <button class="social-btn" onclick="alert('Apple sign-up coming soon')"> Sign up with Apple</button>
+    <p class="auth-switch">Already have an account? <a onclick="showAuth('login')">Login</a></p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- MAIN APP (shown after login) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="main-app" id="main-app">
+    <div class="status-bar">
+      <span id="status-time">04:47 am</span>
+      <div class="protected">🛡️ AASHA Protected</div>
+      <div class="battery">📶 🔋 85%</div>
+    </div>
+    <div class="app-header">
+      <div class="app-logo">🛡️</div>
+      <div class="app-title">
+        <h1>AASHA</h1>
+        <p>Your Health Guardian</p>
+      </div>
+      <div class="header-actions">
+        <div class="header-icon" onclick="showToast('🌐 Language switched to English')">
+          <div class="icon-circle">🌐</div><span>Language</span>
+        </div>
+        <div class="header-icon" onclick="showAlerts()">
+          <div class="icon-circle">🔔<div class="badge">2</div></div><span>Alerts</span>
+        </div>
+        <div class="header-icon" onclick="showToast('⚙️ Settings coming soon')">
+          <div class="icon-circle">⚙️</div><span>Settings</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="page-body">
+        <div class="greeting"><span style="font-size:24px">🌅</span><h2 id="greeting-name">Good Morning, Ramesh ji</h2></div>
+        <p class="greeting-sub">You've taken 2 of 4 medicines today</p>
+        <div class="adherence-card">
+          <div class="progress-ring">
+            <svg width="90" height="90" viewBox="0 0 90 90">
+              <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(44,192,105,0.15)" stroke-width="7"/>
+              <circle cx="45" cy="45" r="38" fill="none" stroke="#2CC069" stroke-width="7" stroke-dasharray="238.76" stroke-dashoffset="52.53" stroke-linecap="round"/>
+            </svg>
+            <div class="value"><span class="num">78</span><span class="pct">%</span></div>
+          </div>
+          <div class="adherence-info">
+            <h3>Health Adherence</h3>
+            <p>Keep it up! You're doing great.</p>
+            <div class="adherence-stats">
+              <div class="stat"><div class="num">2/4</div><div class="label">Today</div></div>
+              <div class="stat"><div class="num">5 days</div><div class="label">Streak</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="take-now-card" onclick="markTaken('Cardivas 25mg')" style="cursor:pointer">
+          <div class="take-now-icon">⏰</div>
+          <div class="take-now-info">
+            <div class="label">Take Now</div>
+            <div class="med-name">Cardivas</div>
+            <div class="med-dose">25mg</div>
+          </div>
+          <div class="take-now-now">NOW</div>
+        </div>
+        <div class="section-title"><span style="font-size:20px">⚡</span><h3>Quick Actions</h3></div>
+
+        <!-- Medicine Schedule -->
+        <div class="med-schedule-card">
+          <span class="pill-icon">💊</span>
+          <div class="med-text"><p>1 tablet at bedtime · Night – Before Sleep</p></div>
+        </div>
+        <p class="dose-count">0/1 doses today</p>
+        <div class="coming-badge">
+          <span>⏰</span>
+          <p>Coming at 10:00 PM</p>
+        </div>
+
+        <!-- This Week Chart -->
+        <div class="section-title"><span style="font-size:20px">📊</span><h3>This Week</h3></div>
+        <div class="weekly-chart-card">
+          <div class="chart-bars">
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:100%;background:linear-gradient(180deg,#5BD8A8,#0E806C)"><span class="bar-label">4/4</span></div></div>
+              <span class="chart-day">Mon</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:75%;background:linear-gradient(180deg,#7BE5BC,#3DB88C)"><span class="bar-label">3/4</span></div></div>
+              <span class="chart-day">Tue</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:100%;background:linear-gradient(180deg,#5BD8A8,#0E806C)"><span class="bar-label">4/4</span></div></div>
+              <span class="chart-day">Wed</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:50%;background:linear-gradient(180deg,#A5E8CC,#5BD8A8)"><span class="bar-label">2/4</span></div></div>
+              <span class="chart-day">Thu</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:100%;background:linear-gradient(180deg,#5BD8A8,#0E806C)"><span class="bar-label">4/4</span></div></div>
+              <span class="chart-day">Fri</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:75%;background:linear-gradient(180deg,#7BE5BC,#3DB88C)"><span class="bar-label">3/4</span></div></div>
+              <span class="chart-day">Sat</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap"><div class="chart-bar today-bar" style="height:50%;background:linear-gradient(180deg,#FFC87A,#F2994A)"><span class="bar-label">2/4</span></div></div>
+              <span class="chart-day today">Today</span>
+            </div>
+          </div>
+          <div class="weekly-avg">
+            <span>🏆</span>
+            <span>Weekly average: <strong>86% adherence</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCAN -->
+    <div class="page" id="page-scan">
+      <div class="page-body">
+        <div class="section-title"><span style="font-size:22px">📷</span><h3>AR Medicine Scanner</h3></div>
+        <p style="color:#3B4453;font-size:14px;margin-bottom:20px">Point your camera at a medicine strip to identify pills and know when to take them.</p>
+
+        <!-- AR Viewfinder -->
+        <div class="ar-viewfinder">
+          <div class="ar-corners">
+            <div class="ar-corner tl"></div>
+            <div class="ar-corner tr"></div>
+            <div class="ar-corner bl"></div>
+            <div class="ar-corner br"></div>
+          </div>
+          <div class="ar-scan-line"></div>
+          <div class="ar-pills">
+            <div class="ar-pill">💊</div>
+            <div class="ar-pill">💊</div>
+            <div class="ar-pill">💊</div>
+            <div class="ar-pill">💊</div>
+            <div class="ar-pill">💊</div>
+            <div class="ar-pill">💊</div>
+          </div>
+          <div class="ar-legend">
+            <span><span class="dot" style="background:#2CC069"></span> Take Now</span>
+            <span><span class="dot" style="background:#EF5350"></span> Wait</span>
+            <span><span class="dot" style="background:#2196F3"></span> Taken</span>
+            <span><span class="dot" style="background:#9E9E9E"></span> Not Today</span>
+          </div>
+        </div>
+
+        <!-- Scan Button -->
+        <button class="scan-btn-large" onclick="startScan()">📷 Scan Medicine</button>
+
+        <!-- Recent Scans -->
+        <div class="section-title"><span style="font-size:20px">📋</span><h3>Recent Scans</h3></div>
+        <div>
+          <div class="scan-item">
+            <div class="scan-pill-icon">💊</div>
+            <div class="scan-item-info">
+              <h4>Metformin 500mg</h4>
+              <p>Today, 8:15 AM</p>
+            </div>
+            <span class="scan-status">✓ Taken</span>
+          </div>
+          <div class="scan-item">
+            <div class="scan-pill-icon">💊</div>
+            <div class="scan-item-info">
+              <h4>Cardivas 25mg</h4>
+              <p>Yesterday, 8:00 PM</p>
+            </div>
+            <span class="scan-status">✓ Taken</span>
+          </div>
+          <div class="scan-item">
+            <div class="scan-pill-icon">💊</div>
+            <div class="scan-item-info">
+              <h4>Ecosprin 75mg</h4>
+              <p>Yesterday, 8:30 PM</p>
+            </div>
+            <span class="scan-status">✓ Taken</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMERGENCY -->
+    <div class="page" id="page-emergency">
+      <div class="page-body">
+        <div class="section-title" style="margin-bottom:24px"><span style="font-size:22px">📞</span><h3>Emergency Contacts</h3></div>
+
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#FFD1DC">👩</div>
+          <div class="contact-info">
+            <h3>Priya (Daughter)</h3>
+            <p>Daughter</p>
+          </div>
+          <button class="call-btn" onclick="alert('Calling Priya...')"><span>📞</span></button>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#B5EAD7">👨‍⚕️</div>
+          <div class="contact-info">
+            <h3>Dr. Sharma</h3>
+            <p>Family Doctor</p>
+          </div>
+          <button class="call-btn" onclick="alert('Calling Dr. Sharma...')"><span>📞</span></button>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#FFE0E0">🚑</div>
+          <div class="contact-info">
+            <h3>Ambulance</h3>
+            <p>Emergency</p>
+          </div>
+          <button class="call-btn" onclick="alert('Calling Ambulance...')"><span>📞</span></button>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-avatar" style="background:#FADADD">👩</div>
+          <div class="contact-info">
+            <h3>Sunita (Wife)</h3>
+            <p>Wife</p>
+          </div>
+          <button class="call-btn" onclick="alert('Calling Sunita...')"><span>📞</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHARMACY -->
+    <div class="page" id="page-pharmacy">
+      <div class="page-body">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="pharmacy-search-input" value="Cardivas 25mg" placeholder="Search medicine..." onkeydown="if(event.key==='Enter')searchPharmacy()">
+        </div>
+        <div class="filter-chips">
+          <div class="chip active" onclick="setChip(this)">🏪 All</div>
+          <div class="chip" onclick="setChip(this)">✅ In Stock</div>
+          <div class="chip" onclick="setChip(this)">📍 Nearest</div>
+        </div>
+        <div id="pharmacy-results">
+          <div class="pharmacy-card">
+            <div class="pharmacy-header"><span style="font-size:22px">🏥</span><div class="name"><h3>Apollo Pharmacy</h3><div class="distance"><span>📍</span><span>2.3 km · 8 min drive</span></div></div><div class="stock-badge"><span>IN STOCK</span> <span>✅</span></div></div>
+            <div class="notes-box"><span>💬</span><p>"10 strips available, expires March 2027"</p></div>
+            <div class="confidence-row"><span class="label">Confidence:</span><div class="confidence-bar"><div class="fill" style="width:95%"></div></div><span class="pct">95%</span></div>
+            <div class="verifier-row"><div class="verifier-avatar">👴</div><div class="verifier-info"><h4>Verified by Ram S.</h4><p>Verified Guardian · 10 minutes ago</p></div></div>
+            <div class="action-buttons"><button class="btn-primary" onclick="openDirections('Apollo Pharmacy','12.9716,77.5946')">📍 Directions</button><button class="btn-secondary" onclick="makeCall('Apollo Pharmacy','080-4567890')">📞 Call</button></div>
+          </div>
+          <div class="pharmacy-card">
+            <div class="pharmacy-header"><span style="font-size:22px">🏥</span><div class="name"><h3>MedPlus Pharmacy</h3><div class="distance"><span>📍</span><span>3.1 km · 12 min drive</span></div></div><div class="stock-badge"><span>IN STOCK</span> <span>✅</span></div></div>
+            <div class="notes-box"><span>💬</span><p>"5 strips available, fresh stock arrived today"</p></div>
+            <div class="confidence-row"><span class="label">Confidence:</span><div class="confidence-bar"><div class="fill" style="width:88%"></div></div><span class="pct">88%</span></div>
+            <div class="verifier-row"><div class="verifier-avatar">👩</div><div class="verifier-info"><h4>Verified by Priya K.</h4><p>Verified Guardian · 25 minutes ago</p></div></div>
+            <div class="action-buttons"><button class="btn-primary" onclick="openDirections('MedPlus Pharmacy','12.9750,77.6010')">📍 Directions</button><button class="btn-secondary" onclick="makeCall('MedPlus Pharmacy','080-5678901')">📞 Call</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAMILY -->
+    <div class="page" id="page-family">
+      <div class="page-body">
+        <div class="add-member-btn" onclick="showAddMemberDialog()"><span class="plus">＋</span><span>Add Family Member</span></div>
+        <div class="section-title" style="margin-bottom:20px"><span style="font-size:22px">🏆</span><h3>Guardian (Ram) Profile</h3></div>
+        <div class="guardian-card">
+          <div class="guardian-header">
+            <div class="guardian-avatar">👴</div>
+            <div class="guardian-name"><h3>Ramesh ji</h3><div class="rank"><span>🥈</span><span>Health Hero</span></div></div>
+            <div class="points-badge"><div class="num">520</div><div class="label">Points</div></div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-box"><div class="stat-row"><span>✅</span><span class="num">12</span></div><div class="label">Verifications</div></div>
+            <div class="stat-box"><div class="stat-row"><span>🏥</span><span class="num">8</span></div><div class="label">Pharmacies</div></div>
+            <div class="stat-box"><div class="stat-row"><span>🤝</span><span class="num">5</span></div><div class="label">Helped</div></div>
+          </div>
+          <div class="next-badge"><p>Next badge: 🥇 <strong>Community Guardian (480 more points)</strong></p><div class="progress-bar"><div class="fill" style="width:52%"></div></div></div>
+        </div>
+        <div class="member-card">
+          <div class="member-header"><div class="member-avatar" style="background:#FFD1DC">👩</div><div class="member-info"><h3>Priya</h3><p>Daughter, 32 years</p></div><div class="safe-badge"><span>☑️</span><span>Safe</span></div></div>
+          <div class="info-boxes"><div class="info-box"><span>💊</span><div class="content"><p style="font-size:14px;color:#3B4453;font-weight:500">No medicines</p></div></div><div class="info-box"><span>📍</span><div class="content"><h4>Office,<br>Bangalore</h4><p>Just now</p></div></div></div>
+          <div class="action-buttons"><button class="btn-primary" onclick="makeCall('Priya','099-8877665')">📞 Call</button><button class="btn-secondary" onclick="sendReminder('Priya')">🔔 Remind</button></div>
+        </div>
+        <div class="member-card">
+          <div class="member-header"><div class="member-avatar" style="background:#FADADD">👩‍🎓</div><div class="member-info"><h3>Anjali</h3><p>Granddaughter, 24 years</p></div><div class="safe-badge"><span>☑️</span><span>Safe</span></div></div>
+          <div class="info-boxes"><div class="info-box"><span>💊</span><div class="content"><p style="font-size:13px;color:#3B4453;font-weight:500">Medicines:</p><h4>1/1 ✅</h4></div></div><div class="info-box"><span>📍</span><div class="content"><h4>College<br>Library</h4><p>20 min ago</p></div></div></div>
+          <div class="action-buttons"><button class="btn-primary" onclick="makeCall('Anjali','099-7766554')">📞 Call</button><button class="btn-secondary" onclick="sendReminder('Anjali')">🔔 Remind</button></div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active" onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span>Home</span></div>
+      <div class="nav-item" onclick="switchTab('scan',this)"><span class="nav-icon">📷</span><span>Scan</span></div>
+      <div class="sos-item" onclick="switchTab('emergency',this)"><div class="sos-btn">SOS</div><span>Emergency</span></div>
+      <div class="nav-item" onclick="switchTab('pharmacy',this)"><span class="nav-icon">🏥</span><span>Pharmacy</span></div>
+      <div class="nav-item" onclick="switchTab('family',this)"><span class="nav-icon">👨‍👩‍👧</span><span>Family</span></div>
+    </nav>
+  </div>
+
+  <!-- ═══ AI Chatbot ═══ -->
+  <button class="chat-fab" id="chat-fab" onclick="toggleChat()">🤖</button>
+
+  <div class="chat-panel" id="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-avatar">🤖</div>
+      <div class="chat-header-info">
+        <h4>AASHA AI Assistant</h4>
+        <p>Powered by AI · Always here to help</p>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg bot">Namaste! 🙏 I'm your AASHA Health Assistant. I can help you with:<br><br>💊 Medicine reminders & info<br>🏥 Finding nearby pharmacies<br>👨‍👩‍👧 Family health updates<br>🚨 Emergency assistance<br><br>Ask me anything or tap 🎤 to speak!</div>
+    </div>
+    <div class="chat-input-bar">
+      <button class="chat-voice-btn" id="voice-btn" onclick="toggleVoice()">🎤</button>
+      <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send-btn" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+
+  <!-- Voice Indicator Overlay -->
+  <div class="voice-indicator" id="voice-indicator">
+    <div class="voice-circle">
+      <div class="voice-circle-inner">🎤</div>
+    </div>
+    <span class="voice-text" id="voice-text">Listening...</span>
+  </div>
+
+  <script>
+    const API = window.location.origin; // Backend on same origin
+    let authToken = null;
+    let currentUser = null;
+
+    function parseError(detail) {
+      if (!detail) return 'Something went wrong';
+      if (typeof detail === 'string') return detail;
+      if (Array.isArray(detail)) return detail.map(d => d.msg || JSON.stringify(d)).join(', ');
+      if (typeof detail === 'object') return detail.msg || detail.message || JSON.stringify(detail);
+      return String(detail);
+    }
+
+    // ─── Auth Flow ───
+    function showAuth(screen) {
+      document.getElementById('auth-login').classList.toggle('hidden', screen !== 'login');
+      document.getElementById('auth-register').classList.toggle('hidden', screen !== 'register');
+    }
+
+    async function doRegister() {
+      const btn = document.getElementById('register-btn');
+      const errEl = document.getElementById('register-error');
+      const succEl = document.getElementById('register-success');
+      errEl.style.display = 'none';
+      succEl.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      const name = document.getElementById('reg-name').value;
+      const phone = document.getElementById('reg-phone').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      if (!name || !phone || !password) {
+        errEl.textContent = 'Please fill all required fields';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Sign Up';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/v1/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, email: email || null, password, user_type: 'elderly' })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(parseError(data.detail));
+
+        // Auto-verify OTP (demo mode uses 123456)
+        const otpRes = await fetch(`${API}/api/v1/auth/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, otp: '123456' })
+        });
+        const otpData = await otpRes.json();
+        if (!otpRes.ok) throw new Error(parseError(otpData.detail));
+
+        authToken = otpData.access_token;
+        currentUser = otpData.user;
+        succEl.textContent = 'Account created! Logging in...';
+        succEl.style.display = 'block';
+        setTimeout(() => enterApp(), 800);
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Sign Up';
+      }
+    }
+
+    async function doLogin() {
+      const btn = document.getElementById('login-btn');
+      const errEl = document.getElementById('login-error');
+      errEl.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      const phone = document.getElementById('login-phone').value;
+      const password = document.getElementById('login-password').value;
+
+      if (!phone || !password) {
+        errEl.textContent = 'Please fill all fields';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Login';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, password })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(parseError(data.detail));
+
+        authToken = data.access_token;
+        currentUser = data.user;
+        enterApp();
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = 'Login';
+      }
+    }
+
+    function enterApp() {
+      document.getElementById('auth-login').classList.add('hidden');
+      document.getElementById('auth-register').classList.add('hidden');
+      document.getElementById('main-app').classList.add('visible');
+      document.getElementById('chat-fab').style.display = 'flex';
+      // Update greeting with user name and time
+      const hour = new Date().getHours();
+      const greet = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+      const emoji = hour < 12 ? '🌅' : hour < 17 ? '☀️' : '🌙';
+      const name = (currentUser && currentUser.name) ? currentUser.name : 'Ramesh';
+      document.getElementById('greeting-name').textContent = `${greet}, ${name} ji`;
+      document.querySelector('.greeting span').textContent = emoji;
+      // Update status bar time
+      updateStatusTime();
+      setInterval(updateStatusTime, 60000);
+    }
+
+    function updateStatusTime() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'pm' : 'am';
+      h = h % 12 || 12;
+      document.getElementById('status-time').textContent = `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+    }
+
+    // ─── Tab Switching ───
+    function switchTab(tab, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + tab).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.sos-item').forEach(n => n.classList.remove('active'));
+      if (el) el.classList.add('active');
+      // Auto-search pharmacy when switching to pharmacy tab
+      if (tab === 'pharmacy') searchPharmacy();
+    }
+
+    // ─── Pharmacy Search (API integrated) ───
+    async function searchPharmacy() {
+      const query = document.getElementById('pharmacy-search-input').value;
+      if (!query) return;
+      const container = document.getElementById('pharmacy-results');
+      container.innerHTML = '<div style="text-align:center;padding:40px"><span class="spinner" style="border-color:rgba(14,128,108,0.2);border-top-color:#0E806C;width:32px;height:32px"></span><p style="margin-top:12px;color:#A1A8B0">Searching pharmacies...</p></div>';
+
+      try {
+        const res = await fetch(`${API}/api/v1/pharmacy/search?medicine_name=${encodeURIComponent(query)}&lat=28.6139&lng=77.209&radius_km=5`, {
+          headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {}
+        });
+        const data = await res.json();
+        if (res.ok && data.results && data.results.length > 0) {
+          container.innerHTML = data.results.map(r => renderPharmacyCard(r)).join('');
+        } else {
+          // Fallback to static demo data
+          container.innerHTML = renderStaticPharmacies();
+        }
+      } catch (e) {
+        // Fallback to static demo data on network error
+        container.innerHTML = renderStaticPharmacies();
+      }
+    }
+
+    function renderPharmacyCard(r) {
+      const avail = r.availability || {};
+      const inStock = avail.status === 'in_stock';
+      const conf = avail.confidence || 85;
+      return `<div class="pharmacy-card">
+        <div class="pharmacy-header"><span style="font-size:22px">🏥</span><div class="name"><h3>${r.name||'Pharmacy'}</h3><div class="distance"><span>📍</span><span>${(r.distance_km||0).toFixed(1)} km</span></div></div>
+        <div class="stock-badge ${inStock?'':'oos-badge'}"><span>${inStock?'IN STOCK':'OUT'}</span><span>${inStock?'✅':'❌'}</span></div></div>
+        <div class="notes-box"><span>💬</span><p>"${avail.notes||'Contact pharmacy for details'}"</p></div>
+        <div class="confidence-row"><span class="label">Confidence:</span><div class="confidence-bar"><div class="fill" style="width:${conf}%"></div></div><span class="pct">${conf}%</span></div>
+        <div class="verifier-row"><div class="verifier-avatar">👴</div><div class="verifier-info"><h4>Verified by ${avail.verified_by||'Guardian'}</h4><p>Verified Guardian</p></div></div>
+        <div class="action-buttons"><button class="btn-primary" onclick="openDirections('${(r.name||'Pharmacy').replace(/'/g,'')}','${r.lat||12.97},${r.lng||77.59}')">📍 Directions</button><button class="btn-secondary" onclick="makeCall('${(r.name||'Pharmacy').replace(/'/g,'')}','${r.phone||'N/A'}')">📞 Call</button></div>
+      </div>`;
+    }
+
+    function renderStaticPharmacies() {
+      return `
+      <div class="pharmacy-card"><div class="pharmacy-header"><span style="font-size:22px">🏥</span><div class="name"><h3>Apollo Pharmacy</h3><div class="distance"><span>📍</span><span>2.3 km · 8 min drive</span></div></div><div class="stock-badge"><span>IN STOCK</span><span>✅</span></div></div><div class="notes-box"><span>💬</span><p>"10 strips available, expires March 2027"</p></div><div class="confidence-row"><span class="label">Confidence:</span><div class="confidence-bar"><div class="fill" style="width:95%"></div></div><span class="pct">95%</span></div><div class="verifier-row"><div class="verifier-avatar">👴</div><div class="verifier-info"><h4>Verified by Ram S.</h4><p>Verified Guardian · 10 minutes ago</p></div></div><div class="action-buttons"><button class="btn-primary" onclick="openDirections('Apollo Pharmacy','12.9716,77.5946')">📍 Directions</button><button class="btn-secondary" onclick="makeCall('Apollo Pharmacy','080-4567890')">📞 Call</button></div></div>
+      <div class="pharmacy-card"><div class="pharmacy-header"><span style="font-size:22px">🏥</span><div class="name"><h3>MedPlus Pharmacy</h3><div class="distance"><span>📍</span><span>3.1 km · 12 min drive</span></div></div><div class="stock-badge"><span>IN STOCK</span><span>✅</span></div></div><div class="notes-box"><span>💬</span><p>"5 strips available, fresh stock arrived today"</p></div><div class="confidence-row"><span class="label">Confidence:</span><div class="confidence-bar"><div class="fill" style="width:88%"></div></div><span class="pct">88%</span></div><div class="verifier-row"><div class="verifier-avatar">👩</div><div class="verifier-info"><h4>Verified by Priya K.</h4><p>Verified Guardian · 25 minutes ago</p></div></div><div class="action-buttons"><button class="btn-primary" onclick="openDirections('MedPlus Pharmacy','12.9750,77.6010')">📍 Directions</button><button class="btn-secondary" onclick="makeCall('MedPlus Pharmacy','080-5678901')">📞 Call</button></div></div>`;
+    }
+
+    function setChip(el) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    // ─── Utility Functions for ALL Buttons ───
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#101623;color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,0.2);animation:fadeIn 0.3s ease-out;font-family:Inter,sans-serif;max-width:350px;text-align:center';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+    }
+
+    function showAlerts() {
+      showToast('🔔 Alerts: 1. Time for Cardivas 25mg  2. Priya checked your status');
+    }
+
+    function markTaken(medName) {
+      showToast('✅ ' + medName + ' marked as taken!');
+      const card = document.querySelector('.take-now-card');
+      if (card) {
+        card.style.background = '#2CC069';
+        card.querySelector('.take-now-now').textContent = 'DONE';
+        card.querySelector('.label').textContent = 'Taken';
+        setTimeout(() => {
+          card.style.background = '#0E806C';
+          card.querySelector('.take-now-now').textContent = 'NOW';
+          card.querySelector('.label').textContent = 'Take Now';
+        }, 3000);
+      }
+    }
+
+    function startScan() {
+      showToast('📷 Opening camera... Point at your medicine strip');
+      // Simulate a scan after 2 seconds
+      setTimeout(() => {
+        showToast('✅ Detected: Metformin 500mg — Take with food, twice daily');
+      }, 2000);
+    }
+
+    function openDirections(name, coords) {
+      showToast('📍 Opening directions to ' + name + '...');
+      // Open Google Maps with the coordinates
+      const [lat, lng] = coords.split(',');
+      window.open('https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng, '_blank');
+    }
+
+    function makeCall(name, phone) {
+      showToast('📞 Calling ' + name + '...');
+      // On mobile this would actually call
+      window.open('tel:' + phone);
+    }
+
+    function sendReminder(name) {
+      showToast('🔔 Reminder sent to ' + name + '!');
+    }
+
+    function showAddMemberDialog() {
+      const name = prompt('Enter family member name:');
+      if (name && name.trim()) {
+        showToast('👨‍👩‍👧 ' + name.trim() + ' added to your family!');
+      }
+    }
+
+    // Hide chat FAB on auth screen
+    document.getElementById('chat-fab').style.display = 'none';
+
+    // ─── AI Chatbot ───
+    const HEALTH_KB = {
+      'medicine': 'Your current medicines include Cardivas 25mg (take now) and Ecosprin 75mg (coming at 10:00 PM). You have taken 2 of 4 medicines today.',
+      'pharmacy': 'Apollo Pharmacy (2.3 km away) has Cardivas 25mg in stock — 10 strips available. MedPlus Pharmacy (3.1 km) also has stock. Shall I get directions?',
+      'family': 'Your family members are all safe! Priya is at her office in Bangalore, and Anjali is at the college library. Would you like to call anyone?',
+      'emergency': 'Emergency contacts: Priya (Daughter), Dr. Sharma (Family Doctor), Ambulance (108), and Sunita (Wife). Say "call" followed by a name to connect.',
+      'health': 'Your health adherence is at 78% this week. You\'ve maintained a 5-day streak! Keep going, Ramesh ji — you\'re doing great! 💪',
+      'adherence': 'Weekly adherence: Mon 4/4, Tue 3/4, Wed 4/4, Thu 2/4, Fri 4/4, Sat 3/4, Today 2/4. Average: 86%. Great consistency!',
+      'scan': 'The AR Medicine Scanner can identify pills from your camera. Your recent scans include Metformin 500mg, Cardivas 25mg, and Ecosprin 75mg — all marked as taken.',
+      'hello': 'Namaste, Ramesh ji! 🙏 How can I help you today? You can ask about your medicines, family, nearby pharmacies, or your health stats.',
+      'help': 'I can help with:\n💊 Medicine schedule & reminders\n🏥 Pharmacy search & availability\n👨‍👩‍👧 Family member status\n📊 Health stats & adherence\n🚨 Emergency contacts\n📷 Medicine scanning\nJust ask!',
+      'cardivas': 'Cardivas 25mg — Take 1 tablet now. It\'s a beta-blocker used for heart health. Available at Apollo Pharmacy (2.3 km) with 10 strips in stock.',
+      'thank': 'You\'re welcome, Ramesh ji! 😊 I\'m always here to help. Take care of your health!',
+      'reminder': 'Your next medicine is due at 10:00 PM tonight — 1 tablet of Ecosprin 75mg at bedtime. I\'ll remind you!',
+      'doctor': 'Dr. Sharma is your family doctor. Would you like me to call him? His number is in your emergency contacts.',
+      'ambulance': '🚨 Ambulance service: Dial 108 for emergency. I can also alert your emergency contacts instantly. Stay safe!',
+    };
+
+    function getAIResponse(msg) {
+      const lower = msg.toLowerCase();
+      for (const [key, response] of Object.entries(HEALTH_KB)) {
+        if (lower.includes(key)) return response;
+      }
+      if (lower.includes('hi') || lower.includes('namaste')) return HEALTH_KB.hello;
+      if (lower.includes('call')) return 'I can help you call your contacts. Available: Priya (Daughter), Dr. Sharma, Ambulance (108), Sunita (Wife). Who would you like to call?';
+      if (lower.includes('how are') || lower.includes('kaise')) return 'I\'m doing great, Ramesh ji! More importantly, how are YOU feeling today? Remember to take your medicines on time! 💊';
+      return 'I understand you said "' + msg + '". I can help with medicine info, pharmacy search, family status, health stats, and emergencies. What would you like to know?';
+    }
+
+    function toggleChat() {
+      const panel = document.getElementById('chat-panel');
+      const fab = document.getElementById('chat-fab');
+      const isOpen = panel.classList.contains('open');
+      panel.classList.toggle('open');
+      fab.classList.toggle('open');
+      fab.textContent = isOpen ? '🤖' : '✕';
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chat-input');
+      const msg = input.value.trim();
+      if (!msg) return;
+      addChatMsg(msg, 'user');
+      input.value = '';
+
+      // Show typing indicator
+      const typingEl = document.createElement('div');
+      typingEl.className = 'chat-msg bot typing';
+      typingEl.textContent = 'AASHA is thinking...';
+      document.getElementById('chat-messages').appendChild(typingEl);
+      scrollChat();
+
+      // Simulate AI response delay
+      setTimeout(() => {
+        typingEl.remove();
+        const response = getAIResponse(msg);
+        addChatMsg(response, 'bot');
+        speakResponse(response);
+      }, 800 + Math.random() * 600);
+    }
+
+    function addChatMsg(text, type) {
+      const container = document.getElementById('chat-messages');
+      const el = document.createElement('div');
+      el.className = 'chat-msg ' + type;
+      el.textContent = text;
+      container.appendChild(el);
+      scrollChat();
+    }
+
+    function scrollChat() {
+      const c = document.getElementById('chat-messages');
+      setTimeout(() => c.scrollTop = c.scrollHeight, 50);
+    }
+
+    // ─── Voice Assistant (Web Speech API) ───
+    let recognition = null;
+    let isListening = false;
+
+    function toggleVoice() {
+      if (isListening) {
+        stopVoice();
+      } else {
+        startVoice();
+      }
+    }
+
+    function startVoice() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        addChatMsg('Voice input not supported in this browser. Try Chrome on desktop or mobile.', 'bot');
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('voice-btn').classList.add('listening');
+        document.getElementById('voice-indicator').classList.add('active');
+        document.getElementById('voice-text').textContent = 'Listening...';
+        // Open chat panel if closed
+        if (!document.getElementById('chat-panel').classList.contains('open')) toggleChat();
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById('voice-text').textContent = transcript || 'Listening...';
+        document.getElementById('chat-input').value = transcript;
+
+        if (event.results[event.results.length - 1].isFinal) {
+          stopVoice();
+          if (transcript.trim()) {
+            document.getElementById('chat-input').value = transcript.trim();
+            sendChat();
+          }
+        }
+      };
+
+      recognition.onerror = (e) => {
+        stopVoice();
+        if (e.error !== 'no-speech') {
+          addChatMsg('Voice error: ' + e.error + '. Please try again.', 'bot');
+        }
+      };
+
+      recognition.onend = () => { stopVoice(); };
+      recognition.start();
+    }
+
+    function stopVoice() {
+      isListening = false;
+      document.getElementById('voice-btn').classList.remove('listening');
+      document.getElementById('voice-indicator').classList.remove('active');
+      if (recognition) { try { recognition.stop(); } catch(e) {} }
+    }
+
+    function speakResponse(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text.replace(/[\n💊🏥👨‍👩‍👧🚨📊📷💪😊🙏]/g, ''));
+        utterance.lang = 'en-IN';
+        utterance.rate = 0.95;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+*.db
+
+# Flutter
+.dart_tool/
+.packages
+.pub/
+build/
+flutter/
+flutter_config/
+flutter_sdk.zip
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter_config/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+*.env
+
+# Misc
+node_modules/
+.planning/
