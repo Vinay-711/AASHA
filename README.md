@@ -3,12 +3,15 @@
 > **Your Health. Your Safety. One Guardian.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-0E806C?style=for-the-badge&logo=github)](https://vinay-711.github.io/AASHA/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev)
 [![ARCore](https://img.shields.io/badge/ARCore-Supported-green.svg)](https://developers.google.com/ar)
 [![SDG 3](https://img.shields.io/badge/SDG-3%20Good%20Health-4C9F38)](https://sdgs.un.org/goals/goal3)
 [![SDG 5](https://img.shields.io/badge/SDG-5%20Gender%20Equality-FF3A21)](https://sdgs.un.org/goals/goal5)
 [![SDG 10](https://img.shields.io/badge/SDG-10%20Reduced%20Inequalities-DD1367)](https://sdgs.un.org/goals/goal10)
+
+🌐 **Live Deployed App:** [https://vinay-711.github.io/AASHA/](https://vinay-711.github.io/AASHA/)
 
 ---
 
@@ -414,8 +417,8 @@ When a health emergency occurs, AASHA simultaneously:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourteam/aasha.git
-cd aasha/backend
+git clone https://github.com/Vinay-711/AASHA.git
+cd AASHA/backend
 
 # Create virtual environment
 python -m venv venv
@@ -703,7 +706,7 @@ POST /api/v1/pharmacy/verify
 
 | Name | Role | Expertise | SDG Focus |
 |------|------|-----------|-----------|
-| Team Lead | Product & Strategy | Healthcare, UX | SDG 3, 5 |
+| [Vinay-711](https://github.com/Vinay-711) | Project Lead & Full-Stack AI Engineer | Healthcare AI, Computer Vision, AR | SDG 3, 5, 10 |
 | AI Engineer | ML/Computer Vision | PyTorch, OpenCV, AR | SDG 3 |
 | AR Developer | Augmented Reality | ARCore, Unity, Flutter | SDG 10 |
 | Backend Dev | API & Infrastructure | FastAPI, Firebase | SDG 3 |
