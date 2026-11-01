@@ -1,0 +1,24 @@
+name: Pharmacy regressions
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  pharmacy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: backend/requirements-pharmacy-test.txt
+      - run: python -m pip install -r backend/requirements-pharmacy-test.txt
+      - name: Test real database verification and cache behavior
+        working-directory: backend
+        run: python -m pytest tests/test_pharmacy_service.py -q

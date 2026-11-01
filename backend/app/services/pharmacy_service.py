@@ -181,10 +181,18 @@ class PharmacyService:
         Record natively structured gamification hooks handling structural PostgreSQL verification logic natively.
         Dynamically limits scaling parameters parsing explicit DB commits inside internal boundaries!
         """
-        # Load local relational records isolating geometries reliably
+        medicine_name = medicine_name.strip()
+        if not medicine_name or len(medicine_name) > 100:
+            raise ValueError("Medicine name must contain 1 to 100 characters")
+        availability = availability.strip().lower()
+        if availability not in {"in_stock", "out_of_stock"}:
+            raise ValueError("Availability must be in_stock or out_of_stock")
+
+        # A write must match the complete medicine name, never a search substring.
+        # For example, a report for Cardivas must not change Cardivas 25mg.
         record = self.db.query(MedicineAvailability).filter(
             MedicineAvailability.pharmacy_id == pharmacy_id,
-            MedicineAvailability.medicine_name.ilike(f"%{medicine_name}%")
+            func.lower(MedicineAvailability.medicine_name) == medicine_name.lower()
         ).first()
 
         is_avail_bool = availability.lower() == "in_stock"
@@ -204,16 +212,21 @@ class PharmacyService:
             )
             self.db.add(record)
             
-        self.db.commit()
+        try:
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
         
         # Structure payload parsing standard points logically natively granting constraints implicitly
         points_awarded = 15
         new_badge = kwargs.get("mock_badge_logic", "Community Contributor")
         
         # Explicit Invalidation executing dynamic dictionary tracking mechanisms linearly resolving out array caches!
-        keys_to_clear = [k for k in SERVICE_CACHE.keys() if medicine_name.lower() in k]
-        for key in keys_to_clear:
-            del SERVICE_CACHE[key]
+        # Cached searches can contain partial names ("Card") or SQL wildcards.
+        # Invalidate all searches after a successful write so those results cannot
+        # keep showing the previous stock status for up to five minutes.
+        SERVICE_CACHE.clear()
             
         return VerificationResult(success=True, points_earned=points_awarded, new_badge=new_badge)
 
