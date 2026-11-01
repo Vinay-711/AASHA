@@ -95,3 +95,12 @@ adding end-to-end tests with synthetic fixtures, and evaluating visual recogniti
 on a documented held-out dataset. Include the behavior changed, reproduction steps,
 checks run, and known limitations in a pull request. Keep medical claims bounded by
 actual evidence.
+
+## Component entry points
+
+- [Flutter client setup](mobile/README.md): device-side application and configuration.
+- [Pharmacy regression tests](backend/tests/test_pharmacy_service.py): database behavior covered by CI.
+- [Pharmacy service](backend/app/services/pharmacy_service.py): stock verification logic.
+- [Pharmacy route prototype](backend/app/api/v1/pharmacy.py): separate mock HTTP surface.
+
+Start with the lightweight tests above before installing optional ML dependencies. This distinction matters when evaluating whether a change affects service logic, a mock route or a rendered demonstration.
