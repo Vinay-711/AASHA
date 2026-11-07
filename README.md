@@ -7,6 +7,8 @@ reminders, pharmacy availability reports, and family/guardian workflows.
 
 [Open the browser demonstration](https://vinay-711.github.io/AASHA/)
 
+[Explore my other AI projects, including public works monitoring and agent payments →](https://github.com/Vinay-711)
+
 ## Project status
 
 The browser demonstration, Flutter source, backend routes, and database services
